@@ -30,14 +30,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             speedDisplay.textContent = speedValue + '×';
             currentSpeedValue.textContent = speedValue + '×';
 
-            // 设置触发键
-            if (customTriggerKey && !Array.from(triggerKeySelect.options).some(option => option.value === customTriggerKey)) {
+            // 设置触发键 (Correctly handle custom key)
+            if (customTriggerKey) {
                 triggerKeySelect.value = 'custom';
                 customKeyContainer.style.display = 'block';
-                customKeyInput.value = customTriggerKey;
+                customKeyInput.value = formatKeyName(customTriggerKey);
+                customKeyInput.dataset.keyCode = customTriggerKey;
             } else {
                 triggerKeySelect.value = triggerKey;
                 customKeyContainer.style.display = 'none';
+                customKeyInput.dataset.keyCode = '';
             }
 
             // 设置覆盖层显示
@@ -62,8 +64,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             let customTriggerKey = '';
 
             if (triggerKey === 'custom') {
-                customTriggerKey = customKeyInput.value;
-                triggerKey = customTriggerKey;
+                customTriggerKey = customKeyInput.dataset.keyCode || '';
+                triggerKey = 'ShiftLeft'; // Fallback
             }
 
             const settings = {
@@ -75,12 +77,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             };
 
             await chrome.storage.sync.set(settings);
-
-            // 通知内容脚本更新设置
-            chrome.runtime.sendMessage({
-                action: 'saveSettings',
-                settings: settings
-            });
+            // The onChanged listener will handle propagation. No need to send message.
         } catch (error) {
             console.error('Error saving settings:', error);
         }
@@ -135,7 +132,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     customKeyInput.addEventListener('keydown', function(e) {
         e.preventDefault();
         const key = e.code;
-        this.value = key;
+        this.value = formatKeyName(key);
+        this.dataset.keyCode = key;
         saveSettings();
     });
 
@@ -153,6 +151,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         chrome.runtime.openOptionsPage();
     });
 
+    // 当设置从其他地方（如options page）更改时，重新加载UI
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (namespace === 'sync') {
+            console.log('Popup detected settings change, reloading UI.');
+            loadSettings();
+        }
+    });
+
     // 初始化加载设置
     await loadSettings();
-}); 
+});
+
+function formatKeyName(keyCode) {
+    const keyNameMap = {
+        'ShiftLeft': 'Left Shift', 'ShiftRight': 'Right Shift',
+        'ControlLeft': 'Left Ctrl', 'ControlRight': 'Right Ctrl',
+        'AltLeft': 'Left Alt', 'AltRight': 'Right Alt',
+        'Space': 'Space', 'Enter': 'Enter', 'Escape': 'Escape',
+        'Tab': 'Tab', 'Backspace': 'Backspace',
+    };
+    if (keyCode.startsWith('Key')) return keyCode.replace('Key', '');
+    if (keyCode.startsWith('Digit')) return keyCode.replace('Digit', '');
+    if (keyCode.startsWith('F') && keyCode.length <= 3) return keyCode;
+    return keyNameMap[keyCode] || keyCode;
+} 

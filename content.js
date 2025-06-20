@@ -39,7 +39,7 @@ class SpeedKeyController {
     
     // 监听来自背景脚本的消息
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.action === 'updateSettings') {
+        if (request.action === 'settingsUpdated') {
             this.updateSettings(request.settings);
         } else if (request.action === 'toggleSpeed') {
             this.toggleSpeedMode();
@@ -48,17 +48,15 @@ class SpeedKeyController {
   }
 
   updateSettings(newSettings) {
-    // 更新内存设置
+    const oldSettings = { ...this.settings };
+    this.settings = { ...this.settings, ...newSettings };
+    
+    // Check if relevant settings have changed
     const relevantKeys = ['triggerKey', 'customTriggerKey', 'speedValue', 'showOverlay'];
-    let changed = false;
-    for (const key of relevantKeys) {
-        if (newSettings[key] !== undefined && this.settings[key] !== newSettings[key]) {
-            this.settings[key] = newSettings[key];
-            changed = true;
-        }
-    }
+    const changed = relevantKeys.some(key => oldSettings[key] !== this.settings[key]);
+
     if (changed) {
-        console.log('Settings updated:', this.settings);
+        console.log('Settings updated in content script:', this.settings);
         if (this.overlay) {
             this.overlay.updateVisibility(this.settings.showOverlay);
         }
@@ -79,7 +77,7 @@ class SpeedKeyController {
       return;
     }
 
-    // 获取实际使用的触发键
+    // Correctly determine the trigger key
     const actualTriggerKey = this.settings.customTriggerKey || this.settings.triggerKey;
     
     if (event.code === actualTriggerKey && !this.isSpeedActive) {
@@ -90,7 +88,7 @@ class SpeedKeyController {
   }
 
   handleKeyUp(event) {
-    // 获取实际使用的触发键
+    // Correctly determine the trigger key
     const actualTriggerKey = this.settings.customTriggerKey || this.settings.triggerKey;
     
     if (event.code === actualTriggerKey && this.isSpeedActive) {

@@ -31,6 +31,14 @@ class OptionsController {
     }
     await this.loadSettings();
     this.setupEventListeners();
+
+    // 当设置从其他地方（如popup）更改时，重新加载UI
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace === 'sync') {
+        console.log('Options page detected settings change, reloading UI.');
+        this.loadSettings();
+      }
+    });
   }
 
   async loadSettings() {
@@ -42,23 +50,24 @@ class OptionsController {
       this.speedSlider.value = settings.speedValue;
       this.updatePresetButtons(settings.speedValue);
 
-      // Set trigger key
-      const { triggerKey } = settings;
-      const presetRadio = document.querySelector(`input[name="triggerKey"][value="${triggerKey}"]`);
-
-      if (presetRadio) {
-        presetRadio.checked = true;
-        this.customKeyContainer.style.display = 'none';
-        this.customKeyInput.value = '';
-        this.customTriggerKey = '';
-      } else {
+      // Set trigger key (Correctly handle custom key)
+      const { triggerKey, customTriggerKey } = settings;
+      
+      if (customTriggerKey) {
         const customRadio = document.querySelector('input[name="triggerKey"][value="custom"]');
         if (customRadio) {
           customRadio.checked = true;
           this.customKeyContainer.style.display = 'block';
-          this.customKeyInput.value = this.formatKeyName(triggerKey);
-          this.customTriggerKey = triggerKey;
+          this.customKeyInput.value = this.formatKeyName(customTriggerKey);
+          this.customTriggerKey = customTriggerKey;
         }
+      } else {
+        const presetRadio = document.querySelector(`input[name="triggerKey"][value="${triggerKey}"]`);
+        if (presetRadio) {
+          presetRadio.checked = true;
+        }
+        this.customKeyContainer.style.display = 'none';
+        this.customTriggerKey = '';
       }
       
       this.showOverlayCheckbox.checked = settings.showOverlay;
@@ -222,19 +231,21 @@ class OptionsController {
 
   async saveSettings() {
     const selectedRadio = document.querySelector('input[name="triggerKey"]:checked');
-    let triggerKey;
+    let triggerKey = 'ShiftLeft';
+    let customTriggerKey = '';
 
-    if (selectedRadio && selectedRadio.value === 'custom') {
-      triggerKey = this.customTriggerKey || 'ShiftLeft';
-    } else if (selectedRadio) {
-      triggerKey = selectedRadio.value;
-    } else {
-      triggerKey = 'ShiftLeft';
+    if (selectedRadio) {
+        if (selectedRadio.value === 'custom') {
+            customTriggerKey = this.customTriggerKey || '';
+        } else {
+            triggerKey = selectedRadio.value;
+        }
     }
 
     const settings = {
       speedValue: parseFloat(this.speedInput.value),
       triggerKey: triggerKey,
+      customTriggerKey: customTriggerKey,
       showOverlay: this.showOverlayCheckbox.checked,
     };
 
