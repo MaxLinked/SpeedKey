@@ -1,94 +1,107 @@
 // SpeedKey 内容脚本 - 核心功能实现
 class SpeedKeyController {
   constructor() {
-    this.isKeyPressed = false;
-    this.originalSpeeds = new Map();
-    this.videos = new Set();
+    this.isSpeedActive = false;
     this.overlay = null;
     this.settings = {
-      triggerKey: 'ShiftLeft',
       speedValue: 2.0,
-      showOverlay: true,
-      customTriggerKey: ''
+      triggerKey: 'ShiftLeft',
+      customTriggerKey: '',
+      showOverlay: true
     };
-    
+    this.originalSpeeds = new Map();
+
     this.init();
   }
 
   async init() {
     await this.loadSettings();
-    this.createOverlay();
     this.setupEventListeners();
-    this.findVideos();
-    this.setupMutationObserver();
+    this.createOverlay();
+    console.log('SpeedKey initialized with settings:', this.settings);
   }
 
   async loadSettings() {
     try {
-      const result = await chrome.storage.sync.get(['triggerKey', 'speedValue', 'showOverlay', 'customTriggerKey']);
-      this.settings = {
-        triggerKey: result.triggerKey || 'ShiftLeft',
-        speedValue: result.speedValue || 2.0,
-        showOverlay: result.showOverlay !== false,
-        customTriggerKey: result.customTriggerKey || ''
-      };
+      const response = await chrome.runtime.sendMessage({ action: 'getSettings' });
+      if (response) {
+        this.settings = { ...this.settings, ...response };
+      }
     } catch (error) {
-      console.log('使用默认设置');
+      console.error('Error loading settings:', error);
+    }
+  }
+
+  setupEventListeners() {
+    document.addEventListener('keydown', this.handleKeyDown.bind(this), true);
+    document.addEventListener('keyup', this.handleKeyUp.bind(this), true);
+    document.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+    
+    // 监听来自背景脚本的消息
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === 'updateSettings') {
+            this.updateSettings(request.settings);
+        } else if (request.action === 'toggleSpeed') {
+            this.toggleSpeedMode();
+        }
+    });
+  }
+
+  updateSettings(newSettings) {
+    // 更新内存设置
+    const relevantKeys = ['triggerKey', 'customTriggerKey', 'speedValue', 'showOverlay'];
+    let changed = false;
+    for (const key of relevantKeys) {
+        if (newSettings[key] !== undefined && this.settings[key] !== newSettings[key]) {
+            this.settings[key] = newSettings[key];
+            changed = true;
+        }
+    }
+    if (changed) {
+        console.log('Settings updated:', this.settings);
+        if (this.overlay) {
+            this.overlay.updateVisibility(this.settings.showOverlay);
+        }
     }
   }
 
   createOverlay() {
-    if (!this.settings.showOverlay) return;
-    
-    this.overlay = document.createElement('div');
-    this.overlay.id = 'speedkey-overlay';
-    this.overlay.className = 'speedkey-hidden';
-    this.overlay.innerHTML = `
-      <div class="speedkey-content">
-        <span class="speedkey-icon">⚡</span>
-        <span class="speedkey-text">${this.settings.speedValue}×</span>
-      </div>
-    `;
-    document.body.appendChild(this.overlay);
-  }
-
-  setupEventListeners() {
-    // 键盘事件监听
-    document.addEventListener('keydown', this.handleKeyDown.bind(this), true);
-    document.addEventListener('keyup', this.handleKeyUp.bind(this), true);
-    
-    // 鼠标滚轮微调
-    document.addEventListener('wheel', this.handleWheel.bind(this), true);
-    
-    // 窗口失焦保护
-    window.addEventListener('blur', this.handleWindowBlur.bind(this));
-    window.addEventListener('focus', this.handleWindowFocus.bind(this));
-    
-    // 标签页可见性变化
-    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    if (this.overlay) {
+      this.overlay.remove();
+    }
+    this.overlay = new SpeedOverlay();
+    this.overlay.updateVisibility(this.settings.showOverlay);
   }
 
   handleKeyDown(event) {
-    // 忽略在输入框内的按键
-    if (this.isInInputElement(event.target)) return;
+    // 检查是否在输入元素中
+    if (this.isInInputElement(event.target)) {
+      return;
+    }
+
+    // 获取实际使用的触发键
+    const actualTriggerKey = this.settings.customTriggerKey || this.settings.triggerKey;
     
-    // 检查是否是触发键
-    if (event.code === this.settings.triggerKey && !this.isKeyPressed) {
-      this.isKeyPressed = true;
+    if (event.code === actualTriggerKey && !this.isSpeedActive) {
+      this.isSpeedActive = true;
       this.activateSpeedMode();
       event.preventDefault();
     }
   }
 
   handleKeyUp(event) {
-    if (event.code === this.settings.triggerKey && this.isKeyPressed) {
-      this.isKeyPressed = false;
+    // 获取实际使用的触发键
+    const actualTriggerKey = this.settings.customTriggerKey || this.settings.triggerKey;
+    
+    if (event.code === actualTriggerKey && this.isSpeedActive) {
+      this.isSpeedActive = false;
       this.deactivateSpeedMode();
+      event.preventDefault();
     }
   }
 
   handleWheel(event) {
-    if (!this.isKeyPressed) return;
+    if (!this.isSpeedActive) return;
     
     event.preventDefault();
     
@@ -102,23 +115,6 @@ class SpeedKeyController {
     this.updateOverlay();
   }
 
-  handleWindowBlur() {
-    if (this.isKeyPressed) {
-      this.deactivateSpeedMode();
-    }
-  }
-
-  handleWindowFocus() {
-    // 窗口重新获得焦点时重置状态
-    this.isKeyPressed = false;
-  }
-
-  handleVisibilityChange() {
-    if (document.hidden && this.isKeyPressed) {
-      this.deactivateSpeedMode();
-    }
-  }
-
   isInInputElement(element) {
     const inputTags = ['input', 'textarea', 'select'];
     const editableElements = ['true', 'plaintext-only'];
@@ -128,123 +124,117 @@ class SpeedKeyController {
            element.isContentEditable;
   }
 
-  findVideos() {
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-      if (!this.videos.has(video)) {
-        this.videos.add(video);
-        this.originalSpeeds.set(video, video.playbackRate);
-      }
-    });
-  }
-
-  setupMutationObserver() {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // 检查新增的视频元素
-            if (node.tagName === 'VIDEO') {
-              this.videos.add(node);
-              this.originalSpeeds.set(node, node.playbackRate);
-              
-              // 如果当前正在倍速模式，立即应用到新视频
-              if (this.isKeyPressed) {
-                node.playbackRate = this.settings.speedValue;
-              }
-            }
-            
-            // 检查新增节点内的视频元素
-            const videos = node.querySelectorAll ? node.querySelectorAll('video') : [];
-            videos.forEach(video => {
-              if (!this.videos.has(video)) {
-                this.videos.add(video);
-                this.originalSpeeds.set(video, video.playbackRate);
-                
-                if (this.isKeyPressed) {
-                  video.playbackRate = this.settings.speedValue;
-                }
-              }
-            });
-          }
-        });
-      });
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-
   activateSpeedMode() {
-    this.findVideos(); // 重新扫描视频元素
+    const videos = document.querySelectorAll('video');
+    console.log('Found videos:', videos.length);
     
-    this.videos.forEach(video => {
+    videos.forEach(video => {
       if (!this.originalSpeeds.has(video)) {
         this.originalSpeeds.set(video, video.playbackRate);
+        console.log('Saved original speed:', video.playbackRate);
       }
       video.playbackRate = this.settings.speedValue;
+      console.log('Set speed to:', this.settings.speedValue);
     });
     
-    this.showOverlay();
+    if (this.overlay && this.settings.showOverlay) {
+      this.overlay.show(this.settings.speedValue);
+    }
   }
 
   deactivateSpeedMode() {
-    this.videos.forEach(video => {
-      const originalSpeed = this.originalSpeeds.get(video) || 1.0;
-      video.playbackRate = originalSpeed;
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+      const originalSpeed = this.originalSpeeds.get(video);
+      if (originalSpeed !== undefined) {
+        video.playbackRate = originalSpeed;
+        console.log('Restored speed to:', originalSpeed);
+      }
     });
     
-    this.hideOverlay();
+    if (this.overlay) {
+      this.overlay.hide();
+    }
   }
 
   updateVideoSpeeds() {
-    this.videos.forEach(video => {
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
       video.playbackRate = this.settings.speedValue;
     });
-  }
-
-  showOverlay() {
-    if (this.overlay) {
-      this.overlay.className = 'speedkey-visible';
-      this.updateOverlay();
-    }
-  }
-
-  hideOverlay() {
-    if (this.overlay) {
-      this.overlay.className = 'speedkey-hidden';
-    }
   }
 
   updateOverlay() {
     if (this.overlay) {
-      const textElement = this.overlay.querySelector('.speedkey-text');
-      if (textElement) {
-        textElement.textContent = `${this.settings.speedValue}×`;
-      }
+      this.overlay.show(this.settings.speedValue);
     }
   }
 
-  // 监听来自popup或options的设置更新
-  updateSettings(newSettings) {
-    this.settings = { ...this.settings, ...newSettings };
-    
-    if (this.overlay) {
-      this.overlay.remove();
-      this.createOverlay();
+  toggleSpeedMode() {
+    if (this.isSpeedActive) {
+      this.deactivateSpeedMode();
+      this.isSpeedActive = false;
+    } else {
+      this.activateSpeedMode();
+      this.isSpeedActive = true;
+    }
+  }
+}
+
+// 速度显示覆盖层
+class SpeedOverlay {
+  constructor() {
+    this.element = null;
+    this.createOverlay();
+  }
+
+  createOverlay() {
+    this.element = document.createElement('div');
+    this.element.id = 'speedkey-overlay';
+    this.element.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 10000;
+      display: none;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    `;
+    document.body.appendChild(this.element);
+  }
+
+  show(speed) {
+    if (this.element) {
+      this.element.textContent = `${speed}×`;
+      this.element.style.display = 'block';
+    }
+  }
+
+  hide() {
+    if (this.element) {
+      this.element.style.display = 'none';
+    }
+  }
+
+  updateVisibility(visible) {
+    if (this.element) {
+      this.element.style.display = visible ? (this.element.textContent ? 'block' : 'none') : 'none';
+    }
+  }
+
+  remove() {
+    if (this.element && this.element.parentNode) {
+      this.element.parentNode.removeChild(this.element);
     }
   }
 }
 
 // 初始化控制器
-const speedKeyController = new SpeedKeyController();
-
-// 监听来自扩展的消息
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'updateSettings') {
-    speedKeyController.updateSettings(request.settings);
-    sendResponse({ success: true });
-  }
-}); 
+const speedKeyController = new SpeedKeyController(); 

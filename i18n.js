@@ -1,7 +1,8 @@
 // SpeedKey 国际化支持
-class I18nManager {
+
+class I18n {
   constructor() {
-    this.currentLanguage = 'en-US'; // 默认设置为英文
+    this.currentLanguage = 'en-US';
     this.translations = {
       'en-US': {
         // 应用基础信息
@@ -65,7 +66,54 @@ class I18nManager {
         'settings_saved': 'Settings saved successfully',
         'settings_reset': 'Settings reset to default',
         'settings_exported': 'Settings exported',
-        'settings_imported': 'Settings imported successfully'
+        'settings_imported': 'Settings imported successfully',
+
+        // 弹出窗口
+        'popup.title': 'SpeedKey',
+        'popup.subtitle': 'Video Speed Controller',
+        'popup.currentSpeed': 'Current Speed',
+        'popup.adjustSpeed': 'Adjust Speed',
+        'popup.quickSet': 'Quick Set:',
+        'popup.showOverlay': 'Show Speed Overlay',
+        'popup.advancedSettings': 'Advanced Settings',
+        'popup.usage.title': 'How to use:',
+        'popup.usage.step1': '• Hold trigger key: Activate speed playback',
+        'popup.usage.step2': '• Release key: Return to normal speed',
+        'popup.usage.step3': '• Scroll wheel while holding: Fine adjust (±0.1×)',
+        'popup.status.ready': 'Ready',
+        'popup.quickHint': 'Hold trigger key to activate',
+        'popup.settings': 'Settings',
+
+        // 选项页面
+        'options.title': 'SpeedKey',
+        'options.subtitle': 'Professional Video Speed Controller',
+        'options.description': 'Intelligent video playback speed control for HTML5 videos, enhancing your viewing experience.',
+        'options.triggerKeySettings': 'Trigger Key Settings',
+        'options.triggerKeyTitle': 'Trigger Key Selection',
+        'options.triggerKeyDesc': 'Choose the key to control video speed',
+        'options.customKey': 'Custom Key',
+        'options.customKeyPlaceholder': 'Press any key...',
+        'options.clearCustom': 'Clear',
+        'options.customKeyHint': 'Click the input box and press the key you want to use',
+        'options.speedSettings': 'Speed Settings',
+        'options.speedTitle': 'Default Speed',
+        'options.speedDesc': 'Set the speed when trigger key is pressed',
+        'options.currentSpeed': 'Current: ',
+        'options.quickPresets': 'Quick presets: ',
+        'options.otherSettings': 'Other Settings',
+        'options.overlayTitle': 'Speed Overlay Display',
+        'options.overlayDesc': 'Show speed indicator on video',
+        'options.autoRestoreTitle': 'Auto Restore Normal Speed',
+        'options.autoRestoreDesc': 'Automatically restore to 1× when switching tabs',
+        'options.scrollAdjustTitle': 'Scroll Wheel Adjustment',
+        'options.scrollAdjustDesc': 'Use scroll wheel to fine-tune speed while holding trigger key',
+        'options.languageSettings': 'Language Settings',
+        'options.footer.madeWith': 'Made with ❤️ for better video experience',
+        'options.footer.github': 'GitHub',
+        'options.footer.issues': 'Report Issues',
+        'options.footer.help': 'Help',
+        'settings_load_failed': 'Failed to load settings',
+        'settings_save_failed': 'Failed to save settings'
       },
       
       'zh-CN': {
@@ -130,78 +178,102 @@ class I18nManager {
         'settings_saved': '设置保存成功',
         'settings_reset': '设置已重置为默认值',
         'settings_exported': '设置已导出',
-        'settings_imported': '设置导入成功'
+        'settings_imported': '设置导入成功',
+
+        // 弹出窗口
+        'popup.title': 'SpeedKey',
+        'popup.subtitle': '视频倍速控制器',
+        'popup.currentSpeed': '当前倍速',
+        'popup.adjustSpeed': '调整倍速',
+        'popup.quickSet': '快速设置：',
+        'popup.showOverlay': '显示倍速浮层',
+        'popup.advancedSettings': '高级设置',
+        'popup.usage.title': '使用方法：',
+        'popup.usage.step1': '• 按住触发键：激活倍速播放',
+        'popup.usage.step2': '• 松开按键：恢复正常速度',
+        'popup.usage.step3': '• 按住时滚轮：微调倍速（±0.1×）',
+        'popup.status.ready': '准备就绪',
+        'popup.quickHint': '按住触发键以激活',
+        'popup.settings': '设置',
+
+        // 选项页面
+        'options.title': 'SpeedKey',
+        'options.subtitle': '专业视频倍速播放插件',
+        'options.description': '智能控制HTML5视频播放倍速，提升您的观看体验。',
+        'options.triggerKeySettings': '触发按键设置',
+        'options.triggerKeyTitle': '触发按键选择',
+        'options.triggerKeyDesc': '选择控制视频倍速的按键',
+        'options.customKey': '自定义按键',
+        'options.customKeyPlaceholder': '按任意键...',
+        'options.clearCustom': '清除',
+        'options.customKeyHint': '点击输入框并按下您要使用的按键',
+        'options.speedSettings': '倍速设置',
+        'options.speedTitle': '默认倍速',
+        'options.speedDesc': '设置按下触发键时的播放倍速',
+        'options.currentSpeed': '当前：',
+        'options.quickPresets': '快速预设：',
+        'options.otherSettings': '其他设置',
+        'options.overlayTitle': '倍速浮层显示',
+        'options.overlayDesc': '在视频上显示倍速指示器',
+        'options.autoRestoreTitle': '自动恢复正常倍速',
+        'options.autoRestoreDesc': '切换标签页时自动恢复到1×倍速',
+        'options.scrollAdjustTitle': '滚轮调节',
+        'options.scrollAdjustDesc': '按住触发键时可用滚轮微调倍速',
+        'options.languageSettings': '语言设置',
+        'options.footer.madeWith': '用 ❤️ 制作，为了更好的视频体验',
+        'options.footer.github': 'GitHub',
+        'options.footer.issues': '反馈问题',
+        'options.footer.help': '帮助',
+        'settings_load_failed': '加载设置失败',
+        'settings_save_failed': '保存设置失败'
       }
     };
-    
-    this.init();
+    this.initPromise = this.init();
   }
   
   async init() {
-    // 从存储中获取语言设置，如果没有则检测浏览器语言
     try {
-      const result = await chrome.storage.sync.get(['language']);
-      if (result.language) {
-        this.currentLanguage = result.language;
-      } else {
-        // 检测浏览器语言，但默认优先使用英文
-        const browserLanguage = navigator.language || navigator.userLanguage;
-        if (browserLanguage.startsWith('zh')) {
-          this.currentLanguage = 'zh-CN';
-        } else {
-          this.currentLanguage = 'en-US'; // 默认英文
-        }
-        // 保存检测到的语言
-        await chrome.storage.sync.set({ language: this.currentLanguage });
+      if (chrome && chrome.storage && chrome.storage.sync) {
+        const result = await chrome.storage.sync.get(['currentLanguage']);
+        this.currentLanguage = result.currentLanguage || 'en-US';
       }
-    } catch (error) {
-      console.log('I18n init error:', error);
-      this.currentLanguage = 'en-US'; // 出错时使用英文
+    } catch (e) {
+      console.error("SpeedKey i18n: Error initializing from storage.", e);
+      this.currentLanguage = 'en-US';
+    } finally {
+      this.applyLanguage(this.currentLanguage);
     }
-    
-    this.updateUI();
   }
   
-  t(key, params = {}) {
-    let text = this.translations[this.currentLanguage]?.[key] || 
-               this.translations['en-US'][key] || 
-               key;
-    
-    // 替换参数
-    Object.keys(params).forEach(param => {
-      text = text.replace(`{${param}}`, params[param]);
-    });
-    
-    return text;
+  async setLanguage(lang) {
+    this.currentLanguage = lang;
+    try {
+      if (chrome && chrome.storage && chrome.storage.sync) {
+        await chrome.storage.sync.set({ currentLanguage: lang });
+      }
+    } catch (e) {
+      console.error("SpeedKey i18n: Error saving language.", e);
+    }
+    this.applyLanguage(lang);
   }
   
-  async setLanguage(language) {
-    this.currentLanguage = language;
-    await chrome.storage.sync.set({ language });
-    this.updateUI();
+  t(key) {
+    return this.translations[this.currentLanguage]?.[key] 
+        || this.translations['en-US']?.[key] 
+        || key;
   }
   
-  updateUI() {
-    // 更新所有带有 data-i18n 属性的元素
+  applyLanguage(lang) {
     document.querySelectorAll('[data-i18n]').forEach(element => {
       const key = element.getAttribute('data-i18n');
       const text = this.t(key);
-      
-      if (element.tagName === 'INPUT' && element.type === 'text') {
+      if (element.hasAttribute('placeholder')) {
         element.placeholder = text;
       } else {
         element.textContent = text;
       }
     });
-    
-    // 更新语言选择器
-    const languageSelect = document.getElementById('languageSelect');
-    if (languageSelect) {
-      languageSelect.value = this.currentLanguage;
-    }
-    
-    // 更新 HTML lang 属性
-    document.documentElement.lang = this.currentLanguage === 'zh-CN' ? 'zh-CN' : 'en';
+    document.documentElement.lang = lang.startsWith('zh') ? 'zh' : 'en';
   }
   
   getCurrentLanguage() {
@@ -209,5 +281,16 @@ class I18nManager {
   }
 }
 
-// 全局 i18n 实例
-window.i18n = new I18nManager(); 
+window.i18n = new I18n();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.i18n.initPromise) {
+        window.i18n.initPromise = window.i18n.init();
+    }
+  });
+} else {
+    if (!window.i18n.initPromise) {
+        window.i18n.initPromise = window.i18n.init();
+    }
+} 

@@ -26,54 +26,49 @@ class OptionsController {
   }
 
   async init() {
-    // 等待国际化初始化完成
-    if (window.i18n) {
-      await window.i18n.init();
+    if (window.i18n && window.i18n.initPromise) {
+      await window.i18n.initPromise;
     }
-    
     await this.loadSettings();
     this.setupEventListeners();
   }
 
   async loadSettings() {
     try {
-      const response = await chrome.runtime.sendMessage({ action: 'getSettings' });
-      
-      // 设置倍速值
-      this.speedInput.value = response.speedValue;
-      this.speedSlider.value = response.speedValue;
-      this.updatePresetButtons(response.speedValue);
-      
-      // 设置触发键
-      const triggerKey = response.triggerKey || 'ShiftLeft';
-      
-      // 检查是否是预设键
-      const triggerKeyRadio = document.querySelector(`input[name="triggerKey"][value="${triggerKey}"]`);
-      if (triggerKeyRadio) {
-        triggerKeyRadio.checked = true;
+      const settings = await chrome.runtime.sendMessage({ action: 'getSettings' });
+
+      // Set speed
+      this.speedInput.value = settings.speedValue;
+      this.speedSlider.value = settings.speedValue;
+      this.updatePresetButtons(settings.speedValue);
+
+      // Set trigger key
+      const { triggerKey } = settings;
+      const presetRadio = document.querySelector(`input[name="triggerKey"][value="${triggerKey}"]`);
+
+      if (presetRadio) {
+        presetRadio.checked = true;
         this.customKeyContainer.style.display = 'none';
+        this.customKeyInput.value = '';
+        this.customTriggerKey = '';
       } else {
-        // 自定义键
         const customRadio = document.querySelector('input[name="triggerKey"][value="custom"]');
         if (customRadio) {
           customRadio.checked = true;
-          this.customTriggerKey = triggerKey;
-          this.customKeyInput.value = this.formatKeyName(triggerKey);
           this.customKeyContainer.style.display = 'block';
+          this.customKeyInput.value = this.formatKeyName(triggerKey);
+          this.customTriggerKey = triggerKey;
         }
       }
       
-      // 设置浮层显示
-      this.showOverlayCheckbox.checked = response.showOverlay;
-      
-      // 设置语言
+      this.showOverlayCheckbox.checked = settings.showOverlay;
+
       if (window.i18n) {
-        this.languageSelect.value = window.i18n.getCurrentLanguage();
+        this.languageSelect.value = settings.currentLanguage || 'en-US';
       }
-      
     } catch (error) {
-      console.error('加载设置失败:', error);
-      this.showNotification(window.i18n ? window.i18n.t('settings_load_failed') : '加载设置失败', 'error');
+      console.error('Failed to load settings:', error);
+      this.showNotification(window.i18n.t('settings_load_failed'), 'error');
     }
   }
 
@@ -168,8 +163,8 @@ class OptionsController {
       const selectedLang = this.languageSelect.value;
       if (window.i18n) {
         await window.i18n.setLanguage(selectedLang);
-        // 重新加载设置以更新显示的按键名称
-        await this.loadSettings();
+        // Do not reload all settings, just update UI text
+        // This prevents resetting the user's unsaved changes
       }
     });
 
@@ -226,34 +221,29 @@ class OptionsController {
   }
 
   async saveSettings() {
-    const selectedTriggerKey = document.querySelector('input[name="triggerKey"]:checked');
-    let triggerKey = 'ShiftLeft';
-    
-    if (selectedTriggerKey) {
-      if (selectedTriggerKey.value === 'custom') {
-        triggerKey = this.customTriggerKey || 'ShiftLeft';
-      } else {
-        triggerKey = selectedTriggerKey.value;
-      }
+    const selectedRadio = document.querySelector('input[name="triggerKey"]:checked');
+    let triggerKey;
+
+    if (selectedRadio && selectedRadio.value === 'custom') {
+      triggerKey = this.customTriggerKey || 'ShiftLeft';
+    } else if (selectedRadio) {
+      triggerKey = selectedRadio.value;
+    } else {
+      triggerKey = 'ShiftLeft';
     }
-    
+
     const settings = {
       speedValue: parseFloat(this.speedInput.value),
       triggerKey: triggerKey,
       showOverlay: this.showOverlayCheckbox.checked,
-      customTriggerKey: this.customTriggerKey
     };
 
     try {
-      await chrome.runtime.sendMessage({
-        action: 'saveSettings',
-        settings: settings
-      });
-      
-      this.showNotification(window.i18n ? window.i18n.t('settings_saved') : '设置已保存');
+      await chrome.runtime.sendMessage({ action: 'saveSettings', settings });
+      this.showNotification(window.i18n.t('settings_saved'));
     } catch (error) {
-      console.error('保存设置失败:', error);
-      this.showNotification(window.i18n ? window.i18n.t('settings_save_failed') : '保存设置失败', 'error');
+      console.error('Failed to save settings:', error);
+      this.showNotification(window.i18n.t('settings_save_failed'), 'error');
     }
   }
 

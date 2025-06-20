@@ -1,92 +1,87 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SpeedKey 快速设置</title>
+  <title>SpeedKey</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="popup-container">
-    <header class="popup-header">
-      <div class="logo">
-        <span class="logo-icon">⚡</span>
-        <h1>SpeedKey</h1>
+  <div class="container">
+    <div class="header">
+      <h1 class="title" data-key="popup.title">SpeedKey</h1>
+      <p class="subtitle" data-key="popup.subtitle">Video Speed Controller</p>
+    </div>
+    
+    <div class="content">
+      <div class="current-speed">
+        <span class="label" data-key="popup.currentSpeed">Current Speed:</span>
+        <span class="speed-value" id="currentSpeedValue">1.0×</span>
       </div>
-      <p class="subtitle">视频倍速助手</p>
-    </header>
-
-    <main class="popup-content">
-      <div class="setting-group">
-        <label for="speedValue" class="setting-label">
-          <span class="label-text">倍速设置</span>
+      
+      <div class="speed-control">
+        <label class="label" data-key="popup.adjustSpeed">Adjust Speed:</label>
+        <div class="slider-container">
+          <input type="range" id="speedSlider" min="0.25" max="5" step="0.25" value="2">
           <span class="speed-display" id="speedDisplay">2.0×</span>
-        </label>
-        <div class="speed-controls">
-          <input 
-            type="range" 
-            id="speedValue" 
-            min="0.5" 
-            max="5.0" 
-            step="0.1" 
-            value="2.0"
-            class="speed-slider"
-          >
-          <div class="speed-marks">
-            <span>0.5×</span>
-            <span>1×</span>
-            <span>2×</span>
-            <span>3×</span>
-            <span>5×</span>
-          </div>
         </div>
       </div>
-
-      <div class="setting-group">
-        <label for="triggerKey" class="setting-label">
-          <span class="label-text">触发按键</span>
+      
+      <div class="preset-buttons">
+        <button class="preset-btn" data-speed="0.5">0.5×</button>
+        <button class="preset-btn" data-speed="1">1×</button>
+        <button class="preset-btn" data-speed="1.5">1.5×</button>
+        <button class="preset-btn" data-speed="2">2×</button>
+        <button class="preset-btn" data-speed="3">3×</button>
+      </div>
+      
+      <div class="trigger-key-section">
+        <label class="label" data-key="popup.triggerKey">Trigger Key:</label>
+        <select id="triggerKeySelect" class="trigger-select">
+          <option value="ShiftLeft">Left Shift</option>
+          <option value="ShiftRight">Right Shift</option>
+          <option value="ControlLeft">Left Ctrl</option>
+          <option value="ControlRight">Right Ctrl</option>
+          <option value="AltLeft">Left Alt</option>
+          <option value="AltRight">Right Alt</option>
+          <option value="Space">Space</option>
+          <option value="KeyQ">Q</option>
+          <option value="KeyW">W</option>
+          <option value="KeyE">E</option>
+          <option value="KeyR">R</option>
+          <option value="KeyT">T</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div id="customKeyContainer" class="custom-key-container" style="display: none;">
+          <input type="text" id="customKeyInput" placeholder="Press a key..." readonly>
+        </div>
+      </div>
+      
+      <div class="overlay-toggle">
+        <label class="checkbox-label">
+          <input type="checkbox" id="showOverlayCheckbox">
+          <span class="checkmark"></span>
+          <span data-key="popup.showOverlay">Show Speed Overlay</span>
         </label>
-        <select id="triggerKey" class="key-select">
-          <option value="ShiftLeft">左 Shift</option>
-          <option value="ShiftRight">右 Shift</option>
-          <option value="ControlLeft">左 Ctrl</option>
-          <option value="ControlRight">右 Ctrl</option>
-          <option value="AltLeft">左 Alt</option>
-          <option value="AltRight">右 Alt</option>
-          <option value="Space">空格键</option>
-          <option value="KeyZ">Z 键</option>
-          <option value="KeyX">X 键</option>
-          <option value="KeyC">C 键</option>
+      </div>
+      
+      <div class="usage-hint">
+        <p data-key="popup.usage">Hold trigger key to activate speed playback</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en-US">English</option>
+          <option value="zh-CN">中文</option>
         </select>
       </div>
-
-      <div class="setting-group">
-        <label class="toggle-label">
-          <input type="checkbox" id="showOverlay" checked>
-          <span class="toggle-slider"></span>
-          <span class="label-text">显示倍速浮层</span>
-        </label>
-      </div>
-
-      <div class="usage-hint">
-        <div class="hint-icon">💡</div>
-        <div class="hint-text">
-          <p><strong>使用方法：</strong></p>
-          <p>• 按住触发键：激活倍速播放</p>
-          <p>• 松开按键：恢复正常速度</p>
-          <p>• 按住时滚轮：微调倍速 (±0.1×)</p>
-        </div>
-      </div>
-    </main>
-
-    <footer class="popup-footer">
-      <button id="openOptions" class="options-btn">
-        高级设置
-      </button>
-      <div class="version">v1.0.0</div>
-    </footer>
+      <button id="settingsBtn" class="settings-btn" data-key="popup.settings">Settings</button>
+    </div>
   </div>
-
+  
+  <script src="i18n.js"></script>
   <script src="popup.js"></script>
 </body>
 </html> 
