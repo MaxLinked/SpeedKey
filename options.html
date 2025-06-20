@@ -11,63 +11,82 @@
     <header class="header">
       <div class="logo">
         <span class="logo-icon">⚡</span>
-        <h1>SpeedKey</h1>
-        <span class="version">v1.0.0</span>
+        <h1 data-i18n="app_name">SpeedKey</h1>
+        <span class="version"><span data-i18n="version">版本</span> v1.0.0</span>
       </div>
-      <p class="description">专业的视频倍速播放工具</p>
+      <p class="description" data-i18n="app_description">专业的视频倍速播放工具</p>
     </header>
 
     <main class="main-content">
       <section class="settings-section">
-        <h2>基础设置</h2>
+        <h2 data-i18n="basic_settings">基础设置</h2>
         
         <div class="setting-card">
           <div class="setting-header">
-            <h3>触发按键</h3>
-            <p>选择用于激活倍速播放的按键</p>
+            <h3 data-i18n="trigger_key">触发按键</h3>
+            <p data-i18n="trigger_key_desc">选择用于激活倍速播放的按键</p>
           </div>
           <div class="setting-content">
             <div class="key-grid">
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="ShiftLeft">
-                <span class="key-button">左 Shift</span>
+                <span class="key-button" data-i18n="ShiftLeft">左 Shift</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="ShiftRight">
-                <span class="key-button">右 Shift</span>
+                <span class="key-button" data-i18n="ShiftRight">右 Shift</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="ControlLeft">
-                <span class="key-button">左 Ctrl</span>
+                <span class="key-button" data-i18n="ControlLeft">左 Ctrl</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="ControlRight">
-                <span class="key-button">右 Ctrl</span>
+                <span class="key-button" data-i18n="ControlRight">右 Ctrl</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="AltLeft">
-                <span class="key-button">左 Alt</span>
+                <span class="key-button" data-i18n="AltLeft">左 Alt</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="AltRight">
-                <span class="key-button">右 Alt</span>
+                <span class="key-button" data-i18n="AltRight">右 Alt</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="Space">
-                <span class="key-button">空格键</span>
+                <span class="key-button" data-i18n="Space">空格键</span>
               </label>
               <label class="key-option">
                 <input type="radio" name="triggerKey" value="KeyZ">
-                <span class="key-button">Z</span>
+                <span class="key-button" data-i18n="KeyZ">Z</span>
               </label>
+              <label class="key-option custom-key-option">
+                <input type="radio" name="triggerKey" value="custom">
+                <span class="key-button custom-key-button" data-i18n="custom_key">自定义</span>
+              </label>
+            </div>
+            <div class="custom-key-input-container" id="customKeyContainer" style="display: none;">
+              <div class="custom-key-input-group">
+                <label for="customKeyInput" class="custom-key-label">
+                  <span data-i18n="custom_key_label">按下要设置的键:</span>
+                </label>
+                <input type="text" id="customKeyInput" class="custom-key-input" 
+                       data-i18n="点击后按下任意键..." readonly>
+                <button type="button" id="clearCustomKey" class="clear-custom-btn">
+                  <span data-i18n="clear">清除</span>
+                </button>
+              </div>
+              <div class="custom-key-hint">
+                <span data-i18n="custom_key_hint">提示：支持字母、数字、F键等大部分按键</span>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="setting-card">
           <div class="setting-header">
-            <h3>播放倍速</h3>
-            <p>设置激活时的视频播放倍速</p>
+            <h3 data-i18n="playback_speed">播放倍速</h3>
+            <p data-i18n="playback_speed_desc">设置激活时的视频播放倍速</p>
           </div>
           <div class="setting-content">
             <div class="speed-setting">
@@ -87,7 +106,7 @@
               </div>
             </div>
             <div class="preset-speeds">
-              <span class="preset-label">快速设置：</span>
+              <span class="preset-label" data-i18n="quick_settings">快速设置：</span>
               <button class="preset-btn" data-speed="1.25">1.25×</button>
               <button class="preset-btn" data-speed="1.5">1.5×</button>
               <button class="preset-btn" data-speed="2.0">2.0×</button>
@@ -99,8 +118,8 @@
 
         <div class="setting-card">
           <div class="setting-header">
-            <h3>显示设置</h3>
-            <p>自定义用户界面显示选项</p>
+            <h3 data-i18n="display_settings">显示设置</h3>
+            <p data-i18n="display_settings_desc">自定义用户界面显示选项</p>
           </div>
           <div class="setting-content">
             <div class="toggle-setting">
@@ -108,48 +127,63 @@
                 <input type="checkbox" id="showOverlay" checked>
                 <span class="toggle-slider"></span>
                 <div class="toggle-info">
-                  <span class="toggle-title">显示倍速浮层</span>
-                  <span class="toggle-desc">在页面右上角显示当前倍速值</span>
+                  <span class="toggle-title" data-i18n="show_overlay">显示倍速浮层</span>
+                  <span class="toggle-desc" data-i18n="show_overlay_desc">在页面右上角显示当前倍速值</span>
                 </div>
               </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-header">
+            <h3 data-i18n="language_settings">语言设置</h3>
+            <p data-i18n="language_settings_desc">选择界面显示语言</p>
+          </div>
+          <div class="setting-content">
+            <div class="language-setting">
+              <select id="languageSelect" class="language-select">
+                <option value="zh-CN">中文（简体）</option>
+                <option value="en-US">English</option>
+              </select>
             </div>
           </div>
         </div>
       </section>
 
       <section class="help-section">
-        <h2>使用说明</h2>
+        <h2 data-i18n="usage_guide">使用说明</h2>
         
         <div class="help-card">
           <div class="help-item">
             <div class="help-icon">🎯</div>
             <div class="help-content">
-              <h4>基本操作</h4>
-              <p>在任意包含视频的网页上，按住设定的触发键即可激活倍速播放，松开后恢复正常速度。</p>
+              <h4 data-i18n="basic_operation">基本操作</h4>
+              <p data-i18n="basic_operation_desc">在任意包含视频的网页上，按住设定的触发键即可激活倍速播放，松开后恢复正常速度。</p>
             </div>
           </div>
           
           <div class="help-item">
             <div class="help-icon">🎛️</div>
             <div class="help-content">
-              <h4>实时调节</h4>
-              <p>按住触发键的同时，使用鼠标滚轮可以实时微调播放倍速（每次±0.1倍）。</p>
+              <h4 data-i18n="realtime_adjust">实时调节</h4>
+              <p data-i18n="realtime_adjust_desc">按住触发键的同时，使用鼠标滚轮可以实时微调播放倍速（每次±0.1倍）。</p>
             </div>
           </div>
           
           <div class="help-item">
             <div class="help-icon">🛡️</div>
             <div class="help-content">
-              <h4>智能保护</h4>
-              <p>在输入框、文本区域内按键不会触发功能；切换标签页或窗口时自动恢复正常速度。</p>
+              <h4 data-i18n="smart_protection">智能保护</h4>
+              <p data-i18n="smart_protection_desc">在输入框、文本区域内按键不会触发功能；切换标签页或窗口时自动恢复正常速度。</p>
             </div>
           </div>
           
           <div class="help-item">
             <div class="help-icon">🔄</div>
             <div class="help-content">
-              <h4>动态检测</h4>
-              <p>自动检测页面中新加载的视频元素，确保所有视频都能享受倍速功能。</p>
+              <h4 data-i18n="dynamic_detection">动态检测</h4>
+              <p data-i18n="dynamic_detection_desc">自动检测页面中新加载的视频元素，确保所有视频都能享受倍速功能。</p>
             </div>
           </div>
         </div>
@@ -158,17 +192,18 @@
 
     <footer class="footer">
       <div class="footer-content">
-        <p>&copy; 2024 SpeedKey. 让视频观看更高效.</p>
+        <p>&copy; 2024 SpeedKey. <span data-i18n="footer_text">让视频观看更高效</span>.</p>
         <div class="footer-links">
-          <a href="#" id="resetSettings">重置设置</a>
-          <a href="#" id="exportSettings">导出设置</a>
-          <a href="#" id="importSettings">导入设置</a>
+          <a href="#" id="resetSettings" data-i18n="reset_settings">重置设置</a>
+          <a href="#" id="exportSettings" data-i18n="export_settings">导出设置</a>
+          <a href="#" id="importSettings" data-i18n="import_settings">导入设置</a>
         </div>
       </div>
     </footer>
   </div>
 
   <div id="notification" class="notification"></div>
+  <script src="i18n.js"></script>
   <script src="options.js"></script>
 </body>
 </html> 

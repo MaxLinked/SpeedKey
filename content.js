@@ -8,7 +8,8 @@ class SpeedKeyController {
     this.settings = {
       triggerKey: 'ShiftLeft',
       speedValue: 2.0,
-      showOverlay: true
+      showOverlay: true,
+      customTriggerKey: ''
     };
     
     this.init();
@@ -24,11 +25,12 @@ class SpeedKeyController {
 
   async loadSettings() {
     try {
-      const result = await chrome.storage.sync.get(['triggerKey', 'speedValue', 'showOverlay']);
+      const result = await chrome.storage.sync.get(['triggerKey', 'speedValue', 'showOverlay', 'customTriggerKey']);
       this.settings = {
         triggerKey: result.triggerKey || 'ShiftLeft',
         speedValue: result.speedValue || 2.0,
-        showOverlay: result.showOverlay !== false
+        showOverlay: result.showOverlay !== false,
+        customTriggerKey: result.customTriggerKey || ''
       };
     } catch (error) {
       console.log('使用默认设置');

@@ -8,6 +8,15 @@ class OptionsController {
     this.triggerKeyRadios = document.querySelectorAll('input[name="triggerKey"]');
     this.notification = document.getElementById('notification');
     
+    // 新增：自定义按键相关
+    this.customKeyContainer = document.getElementById('customKeyContainer');
+    this.customKeyInput = document.getElementById('customKeyInput');
+    this.clearCustomKeyBtn = document.getElementById('clearCustomKey');
+    this.customTriggerKey = '';
+    
+    // 新增：语言切换
+    this.languageSelect = document.getElementById('languageSelect');
+    
     // 底部功能按钮
     this.resetButton = document.getElementById('resetSettings');
     this.exportButton = document.getElementById('exportSettings');
@@ -17,6 +26,11 @@ class OptionsController {
   }
 
   async init() {
+    // 等待国际化初始化完成
+    if (window.i18n) {
+      await window.i18n.init();
+    }
+    
     await this.loadSettings();
     this.setupEventListeners();
   }
@@ -31,17 +45,35 @@ class OptionsController {
       this.updatePresetButtons(response.speedValue);
       
       // 设置触发键
-      const triggerKeyRadio = document.querySelector(`input[name="triggerKey"][value="${response.triggerKey}"]`);
+      const triggerKey = response.triggerKey || 'ShiftLeft';
+      
+      // 检查是否是预设键
+      const triggerKeyRadio = document.querySelector(`input[name="triggerKey"][value="${triggerKey}"]`);
       if (triggerKeyRadio) {
         triggerKeyRadio.checked = true;
+        this.customKeyContainer.style.display = 'none';
+      } else {
+        // 自定义键
+        const customRadio = document.querySelector('input[name="triggerKey"][value="custom"]');
+        if (customRadio) {
+          customRadio.checked = true;
+          this.customTriggerKey = triggerKey;
+          this.customKeyInput.value = this.formatKeyName(triggerKey);
+          this.customKeyContainer.style.display = 'block';
+        }
       }
       
       // 设置浮层显示
       this.showOverlayCheckbox.checked = response.showOverlay;
       
+      // 设置语言
+      if (window.i18n) {
+        this.languageSelect.value = window.i18n.getCurrentLanguage();
+      }
+      
     } catch (error) {
       console.error('加载设置失败:', error);
-      this.showNotification('加载设置失败', 'error');
+      this.showNotification(window.i18n ? window.i18n.t('settings_load_failed') : '加载设置失败', 'error');
     }
   }
 
@@ -78,8 +110,52 @@ class OptionsController {
     // 触发键选择
     this.triggerKeyRadios.forEach(radio => {
       radio.addEventListener('change', () => {
+        if (radio.value === 'custom') {
+          this.customKeyContainer.style.display = 'block';
+          this.customKeyInput.focus();
+        } else {
+          this.customKeyContainer.style.display = 'none';
+          this.customTriggerKey = '';
+        }
         this.saveSettings();
       });
+    });
+
+    // 自定义按键输入
+    this.customKeyInput.addEventListener('click', () => {
+      this.customKeyInput.value = window.i18n ? window.i18n.t('custom_key_label') : '按下要设置的键...';
+      this.customKeyInput.classList.add('listening');
+    });
+
+    this.customKeyInput.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      
+      if (this.customKeyInput.classList.contains('listening')) {
+        this.customTriggerKey = e.code;
+        this.customKeyInput.value = this.formatKeyName(e.code);
+        this.customKeyInput.classList.remove('listening');
+        this.saveSettings();
+      }
+    });
+
+    this.customKeyInput.addEventListener('blur', () => {
+      this.customKeyInput.classList.remove('listening');
+      if (!this.customTriggerKey) {
+        this.customKeyInput.value = '';
+      }
+    });
+
+    // 清除自定义按键
+    this.clearCustomKeyBtn.addEventListener('click', () => {
+      this.customTriggerKey = '';
+      this.customKeyInput.value = '';
+      // 切换到默认按键
+      const defaultRadio = document.querySelector('input[name="triggerKey"][value="ShiftLeft"]');
+      if (defaultRadio) {
+        defaultRadio.checked = true;
+        this.customKeyContainer.style.display = 'none';
+        this.saveSettings();
+      }
     });
 
     // 浮层显示开关
@@ -87,10 +163,55 @@ class OptionsController {
       this.saveSettings();
     });
 
+    // 语言切换
+    this.languageSelect.addEventListener('change', async () => {
+      const selectedLang = this.languageSelect.value;
+      if (window.i18n) {
+        await window.i18n.setLanguage(selectedLang);
+        // 重新加载设置以更新显示的按键名称
+        await this.loadSettings();
+      }
+    });
+
     // 底部功能按钮
     this.resetButton.addEventListener('click', () => this.resetSettings());
     this.exportButton.addEventListener('click', () => this.exportSettings());
     this.importButton.addEventListener('click', () => this.importSettings());
+  }
+
+  formatKeyName(keyCode) {
+    // 常见按键名称格式化
+    const keyNameMap = {
+      'ShiftLeft': 'Left Shift',
+      'ShiftRight': 'Right Shift',
+      'ControlLeft': 'Left Ctrl',
+      'ControlRight': 'Right Ctrl',
+      'AltLeft': 'Left Alt',
+      'AltRight': 'Right Alt',
+      'Space': 'Space',
+      'Enter': 'Enter',
+      'Escape': 'Escape',
+      'Tab': 'Tab',
+      'Backspace': 'Backspace',
+    };
+
+    // 字母键
+    if (keyCode.startsWith('Key')) {
+      return keyCode.replace('Key', '');
+    }
+    
+    // 数字键
+    if (keyCode.startsWith('Digit')) {
+      return keyCode.replace('Digit', '');
+    }
+    
+    // F键
+    if (keyCode.startsWith('F') && keyCode.length <= 3) {
+      return keyCode;
+    }
+    
+    // 其他已知按键
+    return keyNameMap[keyCode] || keyCode;
   }
 
   updatePresetButtons(currentSpeed) {
@@ -106,11 +227,21 @@ class OptionsController {
 
   async saveSettings() {
     const selectedTriggerKey = document.querySelector('input[name="triggerKey"]:checked');
+    let triggerKey = 'ShiftLeft';
+    
+    if (selectedTriggerKey) {
+      if (selectedTriggerKey.value === 'custom') {
+        triggerKey = this.customTriggerKey || 'ShiftLeft';
+      } else {
+        triggerKey = selectedTriggerKey.value;
+      }
+    }
     
     const settings = {
       speedValue: parseFloat(this.speedInput.value),
-      triggerKey: selectedTriggerKey ? selectedTriggerKey.value : 'ShiftLeft',
-      showOverlay: this.showOverlayCheckbox.checked
+      triggerKey: triggerKey,
+      showOverlay: this.showOverlayCheckbox.checked,
+      customTriggerKey: this.customTriggerKey
     };
 
     try {
@@ -119,22 +250,24 @@ class OptionsController {
         settings: settings
       });
       
-      this.showNotification('设置已保存');
+      this.showNotification(window.i18n ? window.i18n.t('settings_saved') : '设置已保存');
     } catch (error) {
       console.error('保存设置失败:', error);
-      this.showNotification('保存设置失败', 'error');
+      this.showNotification(window.i18n ? window.i18n.t('settings_save_failed') : '保存设置失败', 'error');
     }
   }
 
   async resetSettings() {
-    if (!confirm('确定要重置所有设置到默认值吗？')) {
+    const confirmMessage = window.i18n ? window.i18n.t('confirm_reset') : '确定要重置所有设置到默认值吗？';
+    if (!confirm(confirmMessage)) {
       return;
     }
 
     const defaultSettings = {
       speedValue: 2.0,
       triggerKey: 'ShiftLeft',
-      showOverlay: true
+      showOverlay: true,
+      customTriggerKey: ''
     };
 
     try {
@@ -154,11 +287,14 @@ class OptionsController {
       }
       
       this.showOverlayCheckbox.checked = defaultSettings.showOverlay;
+      this.customKeyContainer.style.display = 'none';
+      this.customTriggerKey = '';
+      this.customKeyInput.value = '';
       
-      this.showNotification('设置已重置');
+      this.showNotification(window.i18n ? window.i18n.t('settings_reset') : '设置已重置');
     } catch (error) {
       console.error('重置设置失败:', error);
-      this.showNotification('重置设置失败', 'error');
+      this.showNotification(window.i18n ? window.i18n.t('settings_reset_failed') : '重置设置失败', 'error');
     }
   }
 
@@ -185,10 +321,10 @@ class OptionsController {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      this.showNotification('设置已导出');
+      this.showNotification(window.i18n ? window.i18n.t('settings_exported') : '设置已导出');
     } catch (error) {
       console.error('导出设置失败:', error);
-      this.showNotification('导出设置失败', 'error');
+      this.showNotification(window.i18n ? window.i18n.t('settings_export_failed') : '导出设置失败', 'error');
     }
   }
 
@@ -205,41 +341,31 @@ class OptionsController {
         const text = await file.text();
         const data = JSON.parse(text);
         
-        // 验证数据格式
-        if (!data.settings || !data.version) {
-          throw new Error('无效的设置文件格式');
+        if (data.settings) {
+          await chrome.runtime.sendMessage({
+            action: 'saveSettings',
+            settings: data.settings
+          });
+          
+          // 重新加载设置
+          await this.loadSettings();
+          
+          this.showNotification(window.i18n ? window.i18n.t('settings_imported') : '设置已导入');
+        } else {
+          throw new Error('Invalid settings file format');
         }
-
-        const settings = data.settings;
-        
-        // 验证设置值
-        if (settings.speedValue < 0.1 || settings.speedValue > 5.0) {
-          throw new Error('倍速值超出有效范围');
-        }
-
-        // 保存导入的设置
-        await chrome.runtime.sendMessage({
-          action: 'saveSettings',
-          settings: settings
-        });
-
-        // 重新加载页面设置
-        await this.loadSettings();
-        
-        this.showNotification('设置已导入');
       } catch (error) {
         console.error('导入设置失败:', error);
-        this.showNotification('导入设置失败: ' + error.message, 'error');
+        this.showNotification(window.i18n ? window.i18n.t('settings_import_failed') : '导入设置失败', 'error');
       }
     });
-    
+
     input.click();
   }
 
   showNotification(message, type = 'success') {
     this.notification.textContent = message;
-    this.notification.className = `notification ${type}`;
-    this.notification.classList.add('show');
+    this.notification.className = `notification ${type} show`;
     
     setTimeout(() => {
       this.notification.classList.remove('show');
@@ -247,7 +373,7 @@ class OptionsController {
   }
 }
 
-// 页面加载完成后初始化
+// 等待页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
   new OptionsController();
 }); 
