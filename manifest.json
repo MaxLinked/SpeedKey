@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SpeedKey - 视频倍速助手",
+  "name": "SpeedKey",
   "version": "1.0.0",
-  "description": "按住指定按键时以自定义倍速播放页面视频，松开恢复正常速度",
+  "description": "Professional video speed control extension for HTML5 videos with customizable hotkeys",
   "permissions": [
     "storage",
     "activeTab"
@@ -20,7 +20,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "SpeedKey 设置"
+    "default_title": "SpeedKey Settings"
   },
   "options_page": "options.html",
   "icons": {
