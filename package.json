@@ -1,0 +1,46 @@
+{
+  "name": "speedkey-chrome-extension",
+  "version": "1.0.0",
+  "description": "按住指定按键时以自定义倍速播放页面视频，松开恢复正常速度的Chrome扩展",
+  "keywords": [
+    "chrome-extension",
+    "video",
+    "speed",
+    "playback",
+    "倍速",
+    "视频",
+    "快捷键"
+  ],
+  "author": "SpeedKey Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/speedkey-chrome-extension.git"
+  },
+  "scripts": {
+    "build": "echo 'Chrome扩展无需构建，直接加载到浏览器即可'",
+    "test": "echo 'Chrome扩展测试通过浏览器扩展管理页面进行'"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "files": [
+    "manifest.json",
+    "content.js",
+    "content.css",
+    "background.js",
+    "popup.html",
+    "popup.css",
+    "popup.js",
+    "options.html",
+    "options.css",
+    "options.js",
+    "icons/"
+  ],
+  "engines": {
+    "chrome": ">=88"
+  },
+  "manifest": {
+    "version": 3,
+    "minimum_chrome_version": "88"
+  }
+} 

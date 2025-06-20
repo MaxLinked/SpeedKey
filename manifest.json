@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "SpeedKey - 视频倍速助手",
+  "version": "1.0.0",
+  "description": "按住指定按键时以自定义倍速播放页面视频，松开恢复正常速度",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SpeedKey 设置"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["speedkey-overlay.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

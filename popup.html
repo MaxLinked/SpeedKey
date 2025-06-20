@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeedKey 快速设置</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <h1>SpeedKey</h1>
+      </div>
+      <p class="subtitle">视频倍速助手</p>
+    </header>
+
+    <main class="popup-content">
+      <div class="setting-group">
+        <label for="speedValue" class="setting-label">
+          <span class="label-text">倍速设置</span>
+          <span class="speed-display" id="speedDisplay">2.0×</span>
+        </label>
+        <div class="speed-controls">
+          <input 
+            type="range" 
+            id="speedValue" 
+            min="0.5" 
+            max="5.0" 
+            step="0.1" 
+            value="2.0"
+            class="speed-slider"
+          >
+          <div class="speed-marks">
+            <span>0.5×</span>
+            <span>1×</span>
+            <span>2×</span>
+            <span>3×</span>
+            <span>5×</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label for="triggerKey" class="setting-label">
+          <span class="label-text">触发按键</span>
+        </label>
+        <select id="triggerKey" class="key-select">
+          <option value="ShiftLeft">左 Shift</option>
+          <option value="ShiftRight">右 Shift</option>
+          <option value="ControlLeft">左 Ctrl</option>
+          <option value="ControlRight">右 Ctrl</option>
+          <option value="AltLeft">左 Alt</option>
+          <option value="AltRight">右 Alt</option>
+          <option value="Space">空格键</option>
+          <option value="KeyZ">Z 键</option>
+          <option value="KeyX">X 键</option>
+          <option value="KeyC">C 键</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label class="toggle-label">
+          <input type="checkbox" id="showOverlay" checked>
+          <span class="toggle-slider"></span>
+          <span class="label-text">显示倍速浮层</span>
+        </label>
+      </div>
+
+      <div class="usage-hint">
+        <div class="hint-icon">💡</div>
+        <div class="hint-text">
+          <p><strong>使用方法：</strong></p>
+          <p>• 按住触发键：激活倍速播放</p>
+          <p>• 松开按键：恢复正常速度</p>
+          <p>• 按住时滚轮：微调倍速 (±0.1×)</p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="popup-footer">
+      <button id="openOptions" class="options-btn">
+        高级设置
+      </button>
+      <div class="version">v1.0.0</div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

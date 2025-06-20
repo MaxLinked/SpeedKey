@@ -1,0 +1,500 @@
+/* SpeedKey 选项页面样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 头部样式 */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.logo-icon {
+  font-size: 36px;
+}
+
+.logo h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.version {
+  background: #667eea;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.description {
+  font-size: 16px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* 主要内容区域 */
+.main-content {
+  display: grid;
+  gap: 30px;
+}
+
+.settings-section h2,
+.help-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 设置卡片 */
+.setting-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.setting-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.setting-header {
+  margin-bottom: 20px;
+}
+
+.setting-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.setting-header p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 按键网格 */
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.key-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.key-option input[type="radio"] {
+  display: none;
+}
+
+.key-button {
+  display: block;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.key-option input:checked + .key-button {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: scale(1.02);
+}
+
+.key-button:hover {
+  border-color: #667eea;
+  background: #f0f2ff;
+}
+
+.key-option input:checked + .key-button:hover {
+  background: #5a6fd8;
+}
+
+/* 倍速设置 */
+.speed-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.speed-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speed-input-group input[type="number"] {
+  width: 100px;
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.speed-unit {
+  font-size: 16px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.speed-slider-container {
+  width: 100%;
+}
+
+#speedSlider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+#speedSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+#speedSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  background: #5a6fd8;
+}
+
+.speed-marks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* 预设倍速按钮 */
+.preset-speeds {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-label {
+  font-size: 14px;
+  color: #666;
+  margin-right: 8px;
+}
+
+.preset-btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.preset-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* 开关设置 */
+.toggle-setting {
+  margin: 16px 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  user-select: none;
+  gap: 16px;
+}
+
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 13px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.toggle-label input:checked + .toggle-slider {
+  background: #667eea;
+}
+
+.toggle-label input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+.toggle-info {
+  flex: 1;
+}
+
+.toggle-title {
+  display: block;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.toggle-desc {
+  display: block;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 帮助部分 */
+.help-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.help-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.help-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.help-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.help-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.help-content p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 底部 */
+.footer {
+  margin-top: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #5a6fd8;
+  text-decoration: underline;
+}
+
+/* 通知样式 */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.error {
+  background: #dc3545;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .header {
+    padding: 20px;
+  }
+  
+  .logo h1 {
+    font-size: 24px;
+  }
+  
+  .key-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .speed-setting {
+    align-items: stretch;
+  }
+  
+  .preset-speeds {
+    justify-content: center;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .setting-card,
+  .help-card,
+  .footer,
+  .header {
+    background: rgba(30, 30, 30, 0.95);
+    color: #e0e0e0;
+  }
+  
+  .setting-header h3,
+  .help-content h4 {
+    color: #e0e0e0;
+  }
+  
+  .setting-header p,
+  .help-content p,
+  .toggle-desc {
+    color: #aaa;
+  }
+  
+  .key-button {
+    background: #404040;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+  
+  .key-button:hover {
+    background: #4a4a4a;
+  }
+  
+  .speed-input-group input[type="number"] {
+    background: #404040;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+  
+  .preset-btn {
+    background: #404040;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+} 
