@@ -1,0 +1,53 @@
+{
+  "name": "speedkey-chrome-extension",
+  "version": "1.0.0",
+  "description": "Hold-to-speed Chrome extension for HTML5 videos with customizable hotkeys and overlay",
+  "keywords": [
+    "chrome-extension",
+    "video",
+    "speed",
+    "playback",
+    "speed-control",
+    "video",
+    "playback",
+    "hotkeys",
+    "overlay"
+  ],
+  "author": "SpeedKey Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/speedkey-chrome-extension.git"
+  },
+  "scripts": {
+    "dev": "echo 'Open chrome://extensions → Load unpacked → SpeedKey (or SpeedKey/SpeedKey) and click Refresh to reload'",
+    "build": "echo 'MV3 extension: no build step by default'",
+    "test": "echo 'Manual testing via browser extension UI'",
+    "format": "echo 'Add prettier/eslint if needed'",
+    "prepare": "husky install",
+    "lint:commit": "node scripts/verify-commit-msg.js .git/COMMIT_EDITMSG"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "files": [
+    "manifest.json",
+    "content.js",
+    "content.css",
+    "background.js",
+    "popup.html",
+    "popup.css",
+    "popup.js",
+    "options.html",
+    "options.css",
+    "options.js",
+    "icons/"
+  ],
+  "engines": {
+    "chrome": ">=88"
+  },
+  "manifest": {
+    "version": 3,
+    "minimum_chrome_version": "88"
+  }
+}

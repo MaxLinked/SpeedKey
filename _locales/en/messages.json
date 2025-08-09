@@ -1,0 +1,9 @@
+{
+  "app_name": { "message": "SpeedKey" },
+  "app_description": { "message": "Professional video speed controller with hold-to-speed and customizable hotkeys" },
+  "action_default_title": { "message": "SpeedKey Settings" },
+  "cmd_toggle_speed": { "message": "Toggle SpeedKey mode" }
+}
+
+
+

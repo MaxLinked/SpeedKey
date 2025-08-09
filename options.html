@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeedKey - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <h1 data-i18n="app_name">SpeedKey</h1>
+        <span class="version"><span data-i18n="version">Version</span> v1.0.0</span>
+      </div>
+      <p class="description" data-i18n="app_description">Professional video speed control tool</p>
+    </header>
+
+    <main class="main-content">
+      <section class="settings-section">
+        <h2 data-i18n="basic_settings">Basic Settings</h2>
+        
+        <div class="setting-card">
+          <div class="setting-header">
+            <h3 data-i18n="trigger_key">Trigger Key</h3>
+            <p data-i18n="trigger_key_desc">Select the key to activate speed control</p>
+          </div>
+          <div class="setting-content">
+            <div class="key-grid">
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="ShiftLeft">
+                <span class="key-button" data-i18n="ShiftLeft">Left Shift</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="ShiftRight">
+                <span class="key-button" data-i18n="ShiftRight">Right Shift</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="ControlLeft">
+                <span class="key-button" data-i18n="ControlLeft">Left Ctrl</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="ControlRight">
+                <span class="key-button" data-i18n="ControlRight">Right Ctrl</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="AltLeft">
+                <span class="key-button" data-i18n="AltLeft">Left Alt</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="AltRight">
+                <span class="key-button" data-i18n="AltRight">Right Alt</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="Space">
+                <span class="key-button" data-i18n="Space">Space</span>
+              </label>
+              <label class="key-option">
+                <input type="radio" name="triggerKey" value="KeyZ">
+                <span class="key-button" data-i18n="KeyZ">Z</span>
+              </label>
+              <label class="key-option custom-key-option">
+                <input type="radio" name="triggerKey" value="custom">
+                <span class="key-button custom-key-button" data-i18n="custom_key">Custom</span>
+              </label>
+            </div>
+            <div class="custom-key-input-container" id="customKeyContainer" style="display: none;">
+              <div class="custom-key-input-group">
+                <label for="customKeyInput" class="custom-key-label">
+                  <span data-i18n="custom_key_label">Press the key to set:</span>
+                </label>
+                <input type="text" id="customKeyInput" class="custom-key-input" 
+                       placeholder="Click and press any key..." readonly>
+                <button type="button" id="clearCustomKey" class="clear-custom-btn">
+                  <span data-i18n="clear">Clear</span>
+                </button>
+              </div>
+              <div class="custom-key-hint">
+                <span data-i18n="custom_key_hint">Tip: Supports letters, numbers, F-keys and most other keys</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-header">
+            <h3 data-i18n="playback_speed">Playback Speed</h3>
+            <p data-i18n="playback_speed_desc">Set the video playback speed when activated</p>
+          </div>
+          <div class="setting-content">
+            <div class="speed-setting">
+              <div class="speed-input-group">
+                <input type="number" id="speedValue" min="0.1" max="5.0" step="0.1" value="2.0">
+                <span class="speed-unit">×</span>
+              </div>
+              <div class="speed-slider-container">
+                <input type="range" id="speedSlider" min="0.5" max="5.0" step="0.1" value="2.0">
+                <div class="speed-marks">
+                  <span>0.5×</span>
+                  <span>1.0×</span>
+                  <span>2.0×</span>
+                  <span>3.0×</span>
+                  <span>5.0×</span>
+                </div>
+              </div>
+            </div>
+            <div class="preset-speeds">
+              <span class="preset-label" data-i18n="quick_settings">Quick Settings:</span>
+              <button class="preset-btn" data-speed="1.25">1.25×</button>
+              <button class="preset-btn" data-speed="1.5">1.5×</button>
+              <button class="preset-btn" data-speed="2.0">2.0×</button>
+              <button class="preset-btn" data-speed="2.5">2.5×</button>
+              <button class="preset-btn" data-speed="3.0">3.0×</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-header">
+            <h3 data-i18n="display_settings">Display Settings</h3>
+            <p data-i18n="display_settings_desc">Customize user interface display options</p>
+          </div>
+          <div class="setting-content">
+            <div class="toggle-setting">
+              <label class="toggle-label">
+                <input type="checkbox" id="showOverlay" checked>
+                <span class="toggle-slider"></span>
+                <div class="toggle-info">
+                  <span class="toggle-title" data-i18n="show_overlay">Show Speed Overlay</span>
+                  <span class="toggle-desc" data-i18n="show_overlay_desc">Display current speed value in top-right corner</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Removed runtime language control; Chrome controls extension locale -->
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <p>&copy; 2024 SpeedKey. <span data-i18n="footer_text">Make video watching more efficient</span>.</p>
+        <div class="footer-links">
+          <a href="#" id="resetSettings" data-i18n="reset_settings">Reset Settings</a>
+          <a href="#" id="exportSettings" data-i18n="export_settings">Export Settings</a>
+          <a href="#" id="importSettings" data-i18n="import_settings">Import Settings</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="notification" class="notification"></div>
+  <script src="shared/constants.js"></script>
+  <script src="shared/settings.js"></script>
+  <script src="shared/utils.js"></script>
+  <!-- i18n is handled by Chrome _locales; remove runtime i18n -->
+  <script src="options.js"></script>
+</body>
+</html> 

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeedKey</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title" data-i18n="popup.title">SpeedKey</h1>
+      <p class="subtitle" data-i18n="popup.subtitle">Video Speed Controller</p>
+    </div>
+    
+    <div class="content">
+      <div class="current-speed">
+        <span class="label" data-i18n="popup.currentSpeed">Current Speed</span>
+        <span class="speed-value" id="currentSpeedValue">1.0×</span>
+      </div>
+      
+      <div class="speed-control">
+        <label class="label" data-i18n="popup.adjustSpeed">Adjust Speed</label>
+        <div class="slider-container">
+          <input type="range" id="speedSlider" min="0.25" max="5" step="0.25" value="2">
+          <span class="speed-display" id="speedDisplay">2.0×</span>
+        </div>
+      </div>
+      
+      <div class="preset-buttons">
+        <button class="preset-btn" data-speed="0.5">0.5×</button>
+        <button class="preset-btn" data-speed="1">1×</button>
+        <button class="preset-btn" data-speed="1.5">1.5×</button>
+        <button class="preset-btn" data-speed="2">2×</button>
+        <button class="preset-btn" data-speed="3">3×</button>
+      </div>
+      
+      <div class="trigger-key-section">
+        <label class="label" data-i18n="trigger_key">Trigger Key</label>
+        <select id="triggerKeySelect" class="trigger-select">
+          <option value="ShiftLeft" data-i18n="ShiftLeft">Left Shift</option>
+          <option value="ShiftRight" data-i18n="ShiftRight">Right Shift</option>
+          <option value="ControlLeft" data-i18n="ControlLeft">Left Ctrl</option>
+          <option value="ControlRight" data-i18n="ControlRight">Right Ctrl</option>
+          <option value="AltLeft" data-i18n="AltLeft">Left Alt</option>
+          <option value="AltRight" data-i18n="AltRight">Right Alt</option>
+          <option value="Space" data-i18n="Space">Space</option>
+          <option value="KeyQ">Q</option>
+          <option value="KeyW">W</option>
+          <option value="KeyE">E</option>
+          <option value="KeyR">R</option>
+          <option value="KeyT">T</option>
+          <option value="custom" data-i18n="custom_key">Custom</option>
+        </select>
+        <div id="customKeyContainer" class="custom-key-container" style="display: none;">
+          <input type="text" id="customKeyInput" placeholder="Press a key..." data-i18n="options.customKeyPlaceholder" readonly>
+        </div>
+      </div>
+      
+      <div class="overlay-toggle">
+        <label class="checkbox-label">
+          <input type="checkbox" id="showOverlayCheckbox">
+          <span class="checkmark"></span>
+          <span data-i18n="popup.showOverlay">Show Speed Overlay</span>
+        </label>
+      </div>
+      
+      <div class="usage-hint">
+        <p data-i18n="popup.quickHint">Hold trigger key to activate</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <!-- Removed runtime language control; Chrome controls extension locale -->
+      <button id="settingsBtn" class="settings-btn" data-i18n="popup.settings">Settings</button>
+    </div>
+  </div>
+  
+  <script src="shared/constants.js"></script>
+  <script src="shared/settings.js"></script>
+  <script src="shared/utils.js"></script>
+  <!-- i18n is handled by Chrome _locales; remove runtime i18n -->
+  <script src="popup.js"></script>
+</body>
+</html> 

@@ -1,0 +1,58 @@
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# 开发工具
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 压缩包
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# 备份文件
+*.bak
+*.backup
+
+# Chrome扩展相关
+*.crx
+*.pem
+key.pem
+
+# 打包文件
+dist/
+build/
+
+# 测试覆盖率
+coverage/
+
+# 环境配置
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 
+
+# 会话与自动记录（不纳入版本控制）
+.specstory/

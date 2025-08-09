@@ -1,0 +1,9 @@
+{
+  "app_name": { "message": "SpeedKey" },
+  "app_description": { "message": "专业的视频倍速控制器，支持按住即倍速与自定义快捷键" },
+  "action_default_title": { "message": "SpeedKey 设置" },
+  "cmd_toggle_speed": { "message": "切换 SpeedKey 模式" }
+}
+
+
+
